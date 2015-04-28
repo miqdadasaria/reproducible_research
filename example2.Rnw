@@ -1,0 +1,15 @@
+\documentclass[a4paper]{article}
+\title{The Chatterjee-Price Attitude Data}
+\author{Miqdad Asaria}
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+From a survey of the clerical employees of a large financial organization, the
+data are aggregated from the questionnaires of the approximately 35 employees
+for each of \Sexpr{nrow(attitude)} (randomly selected) departments. The numbers give the percent
+proportion of favourable responses to seven questions in each department.
+
+
+\end{document}

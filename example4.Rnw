@@ -1,0 +1,43 @@
+\documentclass[a4paper]{article}
+\usepackage{dcolumn}
+\title{The Chatterjee-Price Attitude Data}
+\author{Miqdad Asaria}
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+From a survey of the clerical employees of a large financial organization, the
+data are aggregated from the questionnaires of the approximately 35 employees
+for each of \Sexpr{nrow(attitude)} (randomly selected) departments. The numbers give the percent
+proportion of favourable responses to seven questions in each department.
+
+\section{Data}
+
+\subsection{Data Summary}
+
+<<echo=FALSE, results=tex>>=
+	library(stargazer)
+	# show summary of data set
+	stargazer(attitude, title="Summary of the Chatterjee-Price Attitude Data", summary=TRUE)
+@
+
+\subsection{Regression}
+<<echo=FALSE, results=tex>>=
+	linear.model.1 = lm(rating ~ complaints + privileges + learning + raises + critical, data=attitude)
+	linear.model.2 = lm(rating ~ complaints + privileges + learning, data=attitude)
+	attitude$high.rating = (attitude$rating > 70)
+	probit.model = glm(high.rating ~ learning + critical + advance,
+			data=attitude, family = binomial(link = "probit"))
+
+	stargazer(linear.model.1, 
+			linear.model.2, 
+			probit.model, 
+			title="Regression Results",
+			align=TRUE, 
+			dep.var.labels=c("Overall Rating","High Rating"),
+			covariate.labels=c("Handling of Complaints","No Special Privileges","Opportunity to Learn","Performance-Based Raises","Too Critical","Advancement"),
+			float=FALSE)
+@
+
+\end{document}

@@ -1,0 +1,61 @@
+\documentclass[a4paper]{article}
+\usepackage{float,dcolumn}
+\title{The Chatterjee-Price Attitude Data}
+\author{Miqdad Asaria}
+\begin{document}
+
+\maketitle
+
+
+\section{Introduction}
+From a survey of the clerical employees of a large financial organization, the
+data are aggregated from the questionnaires of the approximately 35 employees
+for each of \Sexpr{nrow(attitude)} (randomly selected) departments. The numbers give the percent
+proportion of favourable responses to seven questions in each department.
+
+\section{Data}
+
+\subsection{Data Summary}
+
+<<echo=FALSE, results=tex>>=
+	library(stargazer)
+	# show summary of data set
+	stargazer(attitude, title="Summary of the Chatterjee-Price Attitude Data", summary=TRUE)
+@
+
+\subsection{Regression}
+<<echo=FALSE, results=tex>>=
+	linear.model.1 = lm(rating ~ complaints + privileges + learning + raises + critical, data=attitude)
+	linear.model.2 = lm(rating ~ complaints + privileges + learning, data=attitude)
+	attitude$high.rating <- (attitude$rating > 70)
+	probit.model = glm(high.rating ~ learning + critical + advance, 
+			data=attitude, family = binomial(link = "probit"))
+
+	stargazer(linear.model.1, 
+			linear.model.2, 
+			probit.model, 
+			title="Regression Results",
+			align=TRUE, 
+			dep.var.labels=c("Overall Rating","High Rating"),
+			covariate.labels=c("Handling of Complaints","No Special Privileges","Opportunity to Learn","Performance-Based Raises","Too Critical","Advancement"),
+			float=FALSE)
+@
+
+\subsection{Graph}
+\begin{figure}[H]
+\centering
+<<echo=FALSE, fig=TRUE>>=
+# add a new question to the data set asking the hair colour of the department manager
+set.seed(123)
+hair_colour = c("Red","Yellow","Black")
+attitude$manager_hair_colour = factor(hair_colour[round(runif(nrow(attitude))*2) + 1])
+# graph the distribution of ratings by manager hair colour
+library(ggplot2)
+ggplot(attitude) + 
+		geom_density(aes(rating, fill=manager_hair_colour), alpha = 0.55) +
+		scale_fill_manual(name="Manager Hair Colour", limits=hair_colour, values=hair_colour)
+@
+\caption{Relationship between manager hair colour and rating}
+\end{figure}
+
+\end{document}
